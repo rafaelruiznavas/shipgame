@@ -1,48 +1,32 @@
 package com.ruiznavas.shipg;
 
-import com.badlogic.gdx.ApplicationAdapter;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input.Keys;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.ruiznavas.shipg.screens.MainMenuScreen;
 
-public class Game extends ApplicationAdapter {
-	SpriteBatch batch;
-	Texture img;
-	float x,y;
+public class ShipGame extends Game {
+	public static final int ANCHO = 480;
+	public static final int ALTO = 720;
+	
+	SpriteBatch batch;	
 	
 	@Override
 	public void create () {
 		batch = new SpriteBatch();
-		img = new Texture("badlogic.jpg");
+		setScreen(new MainMenuScreen(this));
 	}
 
 	@Override
 	public void render () {
-		Gdx.gl.glClearColor(1, 0, 0, 1);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		
-		if(Gdx.input.isKeyPressed(Keys.UP)) {
-			y+=4;
-		}
-		if(Gdx.input.isKeyPressed(Keys.DOWN)) {
-			y-=4;
-		}
-		if(Gdx.input.isKeyPressed(Keys.LEFT)) {
-			x-=4;
-		}
-		if(Gdx.input.isKeyPressed(Keys.RIGHT)) {
-			x+=4;
-		}
-		batch.begin();
-		batch.draw(img, x, y); 
-		batch.end();
+		super.render();
 	}
 	
 	@Override
 	public void dispose () {
 		batch.dispose();
-		img.dispose();
+	}
+	
+	public SpriteBatch getBatch() {
+		return this.batch;
 	}
 }
