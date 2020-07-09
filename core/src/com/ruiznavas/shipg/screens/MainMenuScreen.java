@@ -35,7 +35,7 @@ public class MainMenuScreen implements Screen{
 
 	@Override
 	public void render(float delta) {
-		Gdx.gl.glClearColor(1, 0, 0, 1);
+		Gdx.gl.glClearColor(0.1f, 0.15f, 0.4f, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		
 		game.getBatch().begin();
@@ -44,6 +44,9 @@ public class MainMenuScreen implements Screen{
 		if(Gdx.input.getX() < x + BOTON_SALIR_ANCHO && Gdx.input.getX() > x &&
 			ShipGame.ALTO - Gdx.input.getY() < BOTON_SALIR_Y + BOTON_SALIR_ALTO && ShipGame.ALTO - Gdx.input.getY() > BOTON_SALIR_Y ) {
 			game.getBatch().draw(btnSalirActivo, x, BOTON_SALIR_Y, BOTON_SALIR_ANCHO,BOTON_SALIR_ALTO);
+			if(Gdx.input.isTouched()) {
+				Gdx.app.exit();
+			}
 		} else {
 			game.getBatch().draw(btnSalirInactivo, ShipGame.ANCHO/2 - BOTON_SALIR_ANCHO/2, BOTON_SALIR_Y, BOTON_SALIR_ANCHO,BOTON_SALIR_ALTO);
 		}
@@ -52,6 +55,9 @@ public class MainMenuScreen implements Screen{
 		if(Gdx.input.getX() < x + BOTON_PLAY_ANCHO && Gdx.input.getX() > x &&
 			ShipGame.ALTO - Gdx.input.getY() < BOTON_PLAY_Y + BOTON_PLAY_ALTO && ShipGame.ALTO - Gdx.input.getY() > BOTON_PLAY_Y ) {
 			game.getBatch().draw(btnPlayActivo, x, BOTON_PLAY_Y, BOTON_PLAY_ANCHO,BOTON_PLAY_ALTO);
+			if(Gdx.input.isTouched()) {
+				game.setScreen(new MainGameScreen(game));
+			}
 		} else {
 			game.getBatch().draw(btnPlayInactivo, ShipGame.ANCHO/2 - BOTON_PLAY_ANCHO/2, BOTON_PLAY_Y, BOTON_PLAY_ANCHO,BOTON_PLAY_ALTO);
 		}
@@ -77,5 +83,6 @@ public class MainMenuScreen implements Screen{
 
 	@Override
 	public void dispose() {
+		
 	}
 }
