@@ -1,5 +1,7 @@
 package com.ruiznavas.shipg.screens;
 
+import java.util.ArrayList;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.Input.Keys;
@@ -8,6 +10,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.ruiznavas.shipg.ShipGame;
+import com.ruiznavas.shipg.entidades.Disparo;
 
 public class MainGameScreen implements Screen{
 	public static final float SPEED = 300;
@@ -27,10 +30,13 @@ public class MainGameScreen implements Screen{
 	
 	ShipGame game;
 	
+	ArrayList<Disparo> disparos;
+	
 	public MainGameScreen(ShipGame game) {
 		this.game = game;
 		y = 15;
 		x = ShipGame.ANCHO/2 - ANCHO_SHIP / 2;
+		disparos = new ArrayList<Disparo>();
 		
 		roll = 2;
 		rollTimer = 0;
@@ -49,8 +55,20 @@ public class MainGameScreen implements Screen{
 
 	@Override
 	public void render(float delta) {
+		// Disparo nave
+		if(Gdx.input.isKeyJustPressed(Keys.SPACE)) {
+			disparos.add(new Disparo(x+ ANCHO_SHIP/2));
+		}
+		// Actualizamos los disparos
+		ArrayList<Disparo> disparosEliminar = new ArrayList<Disparo>();
+		for(Disparo disparo : disparos) {
+			disparo.update(delta);
+			if(disparo.eliminar)
+				disparosEliminar.remove(disparo);
+		}
+		disparos.removeAll(disparosEliminar);
 		
-
+		// Movimiento nave
 		if(Gdx.input.isKeyPressed(Keys.UP)) {
 			y+= SPEED * delta;
 		}
@@ -107,6 +125,9 @@ public class MainGameScreen implements Screen{
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		
 		game.getBatch().begin();
+		for(Disparo disparo : disparos) {
+			disparo.render(game.getBatch());
+		}
 		game.getBatch().draw((TextureRegion)rolls[roll].getKeyFrame(stateTime,true), x, y, ANCHO_SHIP, ALTO_SHIP); 
 		game.getBatch().end();
 	}
