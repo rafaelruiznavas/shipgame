@@ -1,15 +1,17 @@
 package com.ruiznavas.shipg.screens;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.ruiznavas.shipg.ShipGame;
+import com.ruiznavas.shipg.entidades.Asteroide;
 import com.ruiznavas.shipg.entidades.Disparo;
 
 public class MainGameScreen implements Screen{
@@ -21,6 +23,8 @@ public class MainGameScreen implements Screen{
 	public static final float VELOCIDAD_ANIMACION_SHIP = 0.5f;
 	public static final float TIMER_CAMBIO_ROLL = 0.25f;
 	public static final float TIEMPO_ESPERA_DISPARO = 0.3f;
+	public static final float TIEMPO_MINIMO_SPAWN_ASTEROIDE = 0.3f;
+	public static final float TIEMPO_MAXIMO_SPAWN_ASTEROIDE = 10.0f;
 	
 	Animation[] rolls; 
 	
@@ -29,16 +33,24 @@ public class MainGameScreen implements Screen{
 	float rollTimer;
 	float stateTime;
 	float shootTimer;
+	float timerSpawnAsteroide;
+	
+	Random random;
 	
 	ShipGame game;
 	
 	ArrayList<Disparo> disparos;
+	ArrayList<Asteroide> asteroides;
 	
 	public MainGameScreen(ShipGame game) {
 		this.game = game;
 		y = 15;
 		x = ShipGame.ANCHO/2 - ANCHO_SHIP / 2;
 		disparos = new ArrayList<Disparo>();
+		asteroides = new ArrayList<Asteroide>();
+		
+		random = new Random();
+		timerSpawnAsteroide = random.nextFloat() * (TIEMPO_MAXIMO_SPAWN_ASTEROIDE - TIEMPO_MINIMO_SPAWN_ASTEROIDE) + TIEMPO_MINIMO_SPAWN_ASTEROIDE;
 		
 		roll = 2;
 		rollTimer = 0;
@@ -72,6 +84,23 @@ public class MainGameScreen implements Screen{
 			disparos.add(new Disparo(x + offset));
 			disparos.add(new Disparo(x + ANCHO_SHIP - offset));
 		}
+		
+		// Codigo spawn asteroides
+		timerSpawnAsteroide -= delta;
+		if(timerSpawnAsteroide <= 0) {
+			timerSpawnAsteroide = random.nextFloat() * (TIEMPO_MAXIMO_SPAWN_ASTEROIDE - TIEMPO_MINIMO_SPAWN_ASTEROIDE) + TIEMPO_MINIMO_SPAWN_ASTEROIDE;
+			asteroides.add(new Asteroide(random.nextInt(Gdx.graphics.getWidth() - Asteroide.ANCHO)));
+		}
+		
+		// Actualizamos los asteroides
+		ArrayList<Asteroide> asteroidesEliminar = new ArrayList<Asteroide>();
+		for(Asteroide asteroide : asteroides) {
+			asteroide.update(delta);;
+			if(asteroide.eliminar)
+				asteroidesEliminar.add(asteroide);
+		}
+		asteroides.removeAll(asteroidesEliminar);
+		
 		// Actualizamos los disparos
 		ArrayList<Disparo> disparosEliminar = new ArrayList<Disparo>();
 		for(Disparo disparo : disparos) {
@@ -147,6 +176,10 @@ public class MainGameScreen implements Screen{
 		for(Disparo disparo : disparos) {
 			disparo.render(game.getBatch());
 		}
+		for(Asteroide asteroide : asteroides) {
+			asteroide.render(game.getBatch());
+		}
+		
 		game.getBatch().draw((TextureRegion)rolls[roll].getKeyFrame(stateTime,true), x, y, ANCHO_SHIP, ALTO_SHIP); 
 		game.getBatch().end();
 	}
