@@ -20,6 +20,7 @@ public class MainGameScreen implements Screen{
 	public static final int ALTO_SHIP = ALTO_PIXEL_SHIP * 3;
 	public static final float VELOCIDAD_ANIMACION_SHIP = 0.5f;
 	public static final float TIMER_CAMBIO_ROLL = 0.25f;
+	public static final float TIEMPO_ESPERA_DISPARO = 0.3f;
 	
 	Animation[] rolls; 
 	
@@ -27,6 +28,7 @@ public class MainGameScreen implements Screen{
 	int roll;
 	float rollTimer;
 	float stateTime;
+	float shootTimer;
 	
 	ShipGame game;
 	
@@ -40,6 +42,7 @@ public class MainGameScreen implements Screen{
 		
 		roll = 2;
 		rollTimer = 0;
+		shootTimer = 0;
 		rolls = new Animation[5];
 		TextureRegion[][] rollSpriteSheet = TextureRegion.split(new Texture("ship.png"), ANCHO_PIXEL_SHIP,ALTO_PIXEL_SHIP);
 		rolls[0] = new Animation<TextureRegion>(VELOCIDAD_ANIMACION_SHIP, rollSpriteSheet[0][0],rollSpriteSheet[1][0]);
@@ -55,9 +58,19 @@ public class MainGameScreen implements Screen{
 
 	@Override
 	public void render(float delta) {
+		shootTimer += delta;
 		// Disparo nave
-		if(Gdx.input.isKeyJustPressed(Keys.SPACE)) {
-			disparos.add(new Disparo(x+ ANCHO_SHIP/2));
+		if(Gdx.input.isKeyPressed(Keys.SPACE) && shootTimer >= TIEMPO_ESPERA_DISPARO ) {
+			shootTimer = 0;
+			int offset = 4;
+			if(roll == 1 || roll == 3)
+				offset = 8;
+			
+			if(roll == 0 || roll == 4)
+				offset = 16;
+			
+			disparos.add(new Disparo(x + offset));
+			disparos.add(new Disparo(x + ANCHO_SHIP - offset));
 		}
 		// Actualizamos los disparos
 		ArrayList<Disparo> disparosEliminar = new ArrayList<Disparo>();
@@ -103,17 +116,23 @@ public class MainGameScreen implements Screen{
 			x+= SPEED * delta;
 			if(x + ANCHO_SHIP > Gdx.graphics.getWidth())
 				x = Gdx.graphics.getWidth() - ANCHO_SHIP;
+			
+			// Actualiza roll si se pulso el boton
+			if(Gdx.input.isKeyJustPressed(Keys.RIGHT) && !Gdx.input.isKeyPressed(Keys.RIGHT) && roll > 0) {
+				rollTimer = 0;
+				roll--;
+			}
 						
 			rollTimer += Gdx.graphics.getDeltaTime();
 			if(Math.abs(rollTimer) > TIMER_CAMBIO_ROLL && roll < 4) {
-				rollTimer = 0;
+				rollTimer -= TIMER_CAMBIO_ROLL;
 				roll++;
 			}
 		}else {
 			if(roll > 2) {
 				rollTimer -= Gdx.graphics.getDeltaTime();
 				if(Math.abs(rollTimer) > TIMER_CAMBIO_ROLL && roll > 0) {
-					rollTimer = 0;
+					rollTimer -= TIMER_CAMBIO_ROLL;
 					roll--;
 				}
 			}
