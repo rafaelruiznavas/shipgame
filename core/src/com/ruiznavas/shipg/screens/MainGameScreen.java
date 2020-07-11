@@ -6,6 +6,7 @@ import java.util.Random;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -16,6 +17,7 @@ import com.ruiznavas.shipg.ShipGame;
 import com.ruiznavas.shipg.entidades.Asteroide;
 import com.ruiznavas.shipg.entidades.Disparo;
 import com.ruiznavas.shipg.entidades.Explosion;
+import com.ruiznavas.shipg.tools.RectColision;
 
 public class MainGameScreen implements Screen{
 	public static final float SPEED = 300;
@@ -46,7 +48,10 @@ public class MainGameScreen implements Screen{
 	ArrayList<Asteroide> asteroides;
 	ArrayList<Explosion> explosiones;
 	
+	Texture vacia;
+	
 	BitmapFont fuentePuntuacion;
+	RectColision rectJugador;
 	int puntuacion;
 	float salud = 1;
 	
@@ -59,6 +64,8 @@ public class MainGameScreen implements Screen{
 		explosiones = new ArrayList<Explosion>();
 		fuentePuntuacion = new BitmapFont(Gdx.files.internal("fonts/hope-gold.fnt"));
 		puntuacion = 0;
+		vacia = new Texture("blank.png");
+		rectJugador = new RectColision(0,0,ANCHO_SHIP,ALTO_SHIP);
 		
 		random = new Random();
 		timerSpawnAsteroide = random.nextFloat() * (TIEMPO_MAXIMO_SPAWN_ASTEROIDE - TIEMPO_MINIMO_SPAWN_ASTEROIDE) + TIEMPO_MINIMO_SPAWN_ASTEROIDE;
@@ -184,6 +191,9 @@ public class MainGameScreen implements Screen{
 			}
 		}
 		
+		// Actualizamos el rectangulo del jugador despues del movimiento
+		rectJugador.mover(x, y);		
+		
 		// Despues de todas las actualizaciones, comprobamos las colisiones
 		for(Disparo disparo : disparos) {
 			for(Asteroide asteroid : asteroides) {
@@ -193,6 +203,13 @@ public class MainGameScreen implements Screen{
 					puntuacion += 100;
 					explosiones.add(new Explosion(asteroid.getX(), asteroid.getY()));
 				}
+			}
+		}
+		
+		for(Asteroide asteroide : asteroides) {
+			if(asteroide.getRectColision().colisionaCon(rectJugador)) {
+				asteroidesEliminar.add(asteroide);
+				salud -= 0.1f;
 			}
 		}
 		
@@ -220,6 +237,16 @@ public class MainGameScreen implements Screen{
 		for(Explosion explosion : explosiones) {
 			explosion.render(game.getBatch()); 
 		}
+		
+		if(salud > 0.6f)
+			game.getBatch().setColor(Color.GREEN);
+		else if(salud > 0.2f)
+			game.getBatch().setColor(Color.ORANGE);
+		else
+			game.getBatch().setColor(Color.RED);
+		
+		game.getBatch().draw(vacia, 0,0, Gdx.graphics.getWidth() * salud, 5);
+		game.getBatch().setColor(Color.WHITE);
 		
 		game.getBatch().draw((TextureRegion)rolls[roll].getKeyFrame(stateTime,true), x, y, ANCHO_SHIP, ALTO_SHIP); 
 		game.getBatch().end();
@@ -251,3 +278,5 @@ public class MainGameScreen implements Screen{
 	}
 
 }
+
+
