@@ -9,10 +9,13 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.ruiznavas.shipg.ShipGame;
 import com.ruiznavas.shipg.entidades.Asteroide;
 import com.ruiznavas.shipg.entidades.Disparo;
+import com.ruiznavas.shipg.entidades.Explosion;
 
 public class MainGameScreen implements Screen{
 	public static final float SPEED = 300;
@@ -24,7 +27,7 @@ public class MainGameScreen implements Screen{
 	public static final float TIMER_CAMBIO_ROLL = 0.25f;
 	public static final float TIEMPO_ESPERA_DISPARO = 0.3f;
 	public static final float TIEMPO_MINIMO_SPAWN_ASTEROIDE = 0.3f;
-	public static final float TIEMPO_MAXIMO_SPAWN_ASTEROIDE = 10.0f;
+	public static final float TIEMPO_MAXIMO_SPAWN_ASTEROIDE = 3.0f;
 	
 	Animation[] rolls; 
 	
@@ -41,6 +44,11 @@ public class MainGameScreen implements Screen{
 	
 	ArrayList<Disparo> disparos;
 	ArrayList<Asteroide> asteroides;
+	ArrayList<Explosion> explosiones;
+	
+	BitmapFont fuentePuntuacion;
+	int puntuacion;
+	float salud = 1;
 	
 	public MainGameScreen(ShipGame game) {
 		this.game = game;
@@ -48,6 +56,9 @@ public class MainGameScreen implements Screen{
 		x = ShipGame.ANCHO/2 - ANCHO_SHIP / 2;
 		disparos = new ArrayList<Disparo>();
 		asteroides = new ArrayList<Asteroide>();
+		explosiones = new ArrayList<Explosion>();
+		fuentePuntuacion = new BitmapFont(Gdx.files.internal("fonts/hope-gold.fnt"));
+		puntuacion = 0;
 		
 		random = new Random();
 		timerSpawnAsteroide = random.nextFloat() * (TIEMPO_MAXIMO_SPAWN_ASTEROIDE - TIEMPO_MINIMO_SPAWN_ASTEROIDE) + TIEMPO_MINIMO_SPAWN_ASTEROIDE;
@@ -81,9 +92,8 @@ public class MainGameScreen implements Screen{
 			if(roll == 0 || roll == 4)
 				offset = 16;
 			
-			disparos.add(new Disparo(x + offset));
-			disparos.add(new Disparo(x + ANCHO_SHIP - offset));
-		}
+			disparos.add(new Disparo(x + offset, y));
+			disparos.add(new Disparo(x + ANCHO_SHIP - offset, y));		}
 		
 		// Codigo spawn asteroides
 		timerSpawnAsteroide -= delta;
@@ -99,16 +109,23 @@ public class MainGameScreen implements Screen{
 			if(asteroide.eliminar)
 				asteroidesEliminar.add(asteroide);
 		}
-		asteroides.removeAll(asteroidesEliminar);
+		
 		
 		// Actualizamos los disparos
 		ArrayList<Disparo> disparosEliminar = new ArrayList<Disparo>();
 		for(Disparo disparo : disparos) {
 			disparo.update(delta);
 			if(disparo.eliminar)
-				disparosEliminar.remove(disparo);
+				disparosEliminar.add(disparo);
 		}
-		disparos.removeAll(disparosEliminar);
+		
+		// Actualizamos las explosiones
+		ArrayList<Explosion> explosionesEliminar = new ArrayList<Explosion>();
+		for(Explosion explosion : explosiones) {
+			explosion.update(delta);
+			if(explosion.eliminar)
+				explosionesEliminar.add(explosion);
+		}
 		
 		// Movimiento nave
 		if(Gdx.input.isKeyPressed(Keys.UP)) {
@@ -167,17 +184,41 @@ public class MainGameScreen implements Screen{
 			}
 		}
 		
+		// Despues de todas las actualizaciones, comprobamos las colisiones
+		for(Disparo disparo : disparos) {
+			for(Asteroide asteroid : asteroides) {
+				if(disparo.getRectColision().colisionaCon(asteroid.getRectColision())) {
+					disparosEliminar.add(disparo);
+					asteroidesEliminar.add(asteroid);
+					puntuacion += 100;
+					explosiones.add(new Explosion(asteroid.getX(), asteroid.getY()));
+				}
+			}
+		}
+		
+		asteroides.removeAll(asteroidesEliminar);
+		disparos.removeAll(disparosEliminar);
+		explosiones.removeAll(explosionesEliminar);
+		
 		stateTime += delta;
 		
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		
 		game.getBatch().begin();
+		
+		GlyphLayout capaPuntuacion = new GlyphLayout(fuentePuntuacion, "SCORE: " + puntuacion);
+		fuentePuntuacion.draw(game.getBatch(), capaPuntuacion, Gdx.graphics.getWidth()/2 - capaPuntuacion.width/2, 
+				Gdx.graphics.getHeight() -capaPuntuacion.height - 10);
+		
 		for(Disparo disparo : disparos) {
 			disparo.render(game.getBatch());
 		}
 		for(Asteroide asteroide : asteroides) {
 			asteroide.render(game.getBatch());
+		}
+		for(Explosion explosion : explosiones) {
+			explosion.render(game.getBatch()); 
 		}
 		
 		game.getBatch().draw((TextureRegion)rolls[roll].getKeyFrame(stateTime,true), x, y, ANCHO_SHIP, ALTO_SHIP); 
