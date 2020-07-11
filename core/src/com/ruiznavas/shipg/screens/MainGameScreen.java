@@ -17,6 +17,7 @@ import com.ruiznavas.shipg.ShipGame;
 import com.ruiznavas.shipg.entidades.Asteroide;
 import com.ruiznavas.shipg.entidades.Disparo;
 import com.ruiznavas.shipg.entidades.Explosion;
+import com.ruiznavas.shipg.tools.FondoScroll;
 import com.ruiznavas.shipg.tools.RectColision;
 
 public class MainGameScreen implements Screen{
@@ -80,6 +81,9 @@ public class MainGameScreen implements Screen{
 		rolls[2] = new Animation<TextureRegion>(VELOCIDAD_ANIMACION_SHIP, rollSpriteSheet[0][2],rollSpriteSheet[1][2]);
 		rolls[3] = new Animation<TextureRegion>(VELOCIDAD_ANIMACION_SHIP, rollSpriteSheet[0][3],rollSpriteSheet[1][3]);
 		rolls[4] = new Animation<TextureRegion>(VELOCIDAD_ANIMACION_SHIP, rollSpriteSheet[0][4],rollSpriteSheet[1][4]);
+		
+		game.fondoScroll.setVelocidadFijada(true);
+		game.fondoScroll.setVelocidad(FondoScroll.VELOCIDAD_DEFECTO);
 	}
 
 	@Override
@@ -210,6 +214,12 @@ public class MainGameScreen implements Screen{
 			if(asteroide.getRectColision().colisionaCon(rectJugador)) {
 				asteroidesEliminar.add(asteroide);
 				salud -= 0.1f;
+				
+				if(salud <= 0) {
+					this.dispose();
+					game.setScreen(new GameOverScreen(game, puntuacion));
+					return;
+				}
 			}
 		}
 		
@@ -223,6 +233,8 @@ public class MainGameScreen implements Screen{
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		
 		game.getBatch().begin();
+		
+		game.fondoScroll.actualizarYRender(delta, game.getBatch());
 		
 		GlyphLayout capaPuntuacion = new GlyphLayout(fuentePuntuacion, "SCORE: " + puntuacion);
 		fuentePuntuacion.draw(game.getBatch(), capaPuntuacion, Gdx.graphics.getWidth()/2 - capaPuntuacion.width/2, 
