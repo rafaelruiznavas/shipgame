@@ -6,9 +6,10 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 public class Explosion {
-	public static final float LONGITUD_FRAME = 0.1f;
+	public static final float LONGITUD_FRAME = 0.08f;
 	public static final int OFFSET = 8;
-	public static final int TAM = 16;
+	public static final int TAM = 64;
+	public static final int TAM_IMAGEN = 16;
 	
 	private static Animation anim = null;
 	float x,y;
@@ -22,7 +23,7 @@ public class Explosion {
 		tiempoEstado = 0;
 		
 		if(anim == null) {
-			anim = new Animation<TextureRegion>(LONGITUD_FRAME, TextureRegion.split(new Texture("explosion.png"), TAM, TAM)[0]);
+			anim = new Animation<TextureRegion>(LONGITUD_FRAME, TextureRegion.split(new Texture("explosion.png"), TAM_IMAGEN, TAM_IMAGEN)[0]);
 		}
 	}
 	
@@ -35,7 +36,7 @@ public class Explosion {
 	}
 
 	public void render(SpriteBatch batch) {
-		batch.draw((TextureRegion) anim.getKeyFrame(tiempoEstado), x, y);
+		batch.draw((TextureRegion) anim.getKeyFrame(tiempoEstado), x, y, TAM, TAM);
 	}
 }
 

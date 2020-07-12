@@ -15,6 +15,9 @@ public class MainMenuScreen implements Screen{
 	private static final int BOTON_PLAY_ANCHO = 200;
 	private static final int BOTON_PLAY_ALTO = 60;
 	private static final int BOTON_PLAY_Y = 200;
+	private static final int ANCHO_LOGO = 400;
+	private static final int ALTO_LOGO = 250;
+	private static final int LOGO_Y = 300;
 
 	final ShipGame game;
 	
@@ -22,6 +25,7 @@ public class MainMenuScreen implements Screen{
 	Texture btnSalirInactivo;
 	Texture btnPlayActivo;
 	Texture btnPlayInactivo;
+	Texture logo;
 	
 	public MainMenuScreen(final ShipGame game) {
 		this.game = game;
@@ -29,6 +33,7 @@ public class MainMenuScreen implements Screen{
 		btnPlayInactivo = new Texture("btnPlayInactivo.png");
 		btnSalirActivo = new Texture("btnSalirActivo.png");
 		btnSalirInactivo = new Texture("btnSalirInactivo.png");
+		logo = new Texture("logo.png");
 		
 		game.fondoScroll.setVelocidadFijada(false);
 		game.fondoScroll.setVelocidad(FondoScroll.VELOCIDAD_DEFECTO);
@@ -91,6 +96,8 @@ public class MainMenuScreen implements Screen{
 		} else {
 			game.getBatch().draw(btnPlayInactivo, ShipGame.ANCHO/2 - BOTON_PLAY_ANCHO/2, BOTON_PLAY_Y, BOTON_PLAY_ANCHO,BOTON_PLAY_ALTO);
 		}
+		
+		game.getBatch().draw(logo, ShipGame.ANCHO/2 - ANCHO_LOGO/2, LOGO_Y, ANCHO_LOGO, ALTO_LOGO);
 
 		game.getBatch().end();
 	}

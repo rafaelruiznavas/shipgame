@@ -7,8 +7,8 @@ import com.ruiznavas.shipg.tools.RectColision;
 
 public class Asteroide {
 	public static final int VELOCIDAD = 500;
-	public static final int ANCHO = 16;
-	public static final int ALTO = 16;
+	public static final int ANCHO = 32;
+	public static final int ALTO = 32;
 	private static Texture textura;
 	
 	float x,y;
@@ -35,7 +35,7 @@ public class Asteroide {
 	}
 	
 	public void render(SpriteBatch batch) {
-		batch.draw(textura, x, y);
+		batch.draw(textura, x, y, ANCHO, ALTO);
 	}
 	
 	public RectColision getRectColision() {

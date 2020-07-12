@@ -69,16 +69,30 @@ public class GameOverScreen implements Screen{
 		fuentePuntuacion.draw(game.getBatch(), capaPuntuacionAlta, 
 				ShipGame.ANCHO/2 - capaPuntuacionAlta.width/2,
 				ShipGame.ALTO - ALTO_BANNER - 15 * 6);
+		
+		float touchX = game.camaraJuego.getInputEnMundoJuego().x, touchY = ShipGame.ALTO - game.camaraJuego.getInputEnMundoJuego().y;
+		
 		GlyphLayout capaIntentaDenuevo = new GlyphLayout(fuentePuntuacion, "Try Again");
 		GlyphLayout capaMenuPrincipal = new GlyphLayout(fuentePuntuacion, "Main Menu");
-
+		
 		float intentaX = ShipGame.ANCHO / 2 - capaIntentaDenuevo.width / 2;
 		float intentaY = ShipGame.ALTO / 2 - capaIntentaDenuevo.height / 2;
-		
 		float menuX = ShipGame.ANCHO / 2 - capaMenuPrincipal.width / 2;
 		float menuY = ShipGame.ALTO / 2 - capaMenuPrincipal.height / 2 - capaIntentaDenuevo.height - 15;
 		
-		float touchX = game.camaraJuego.getInputEnMundoJuego().x, touchY = ShipGame.ALTO - game.camaraJuego.getInputEnMundoJuego().y;
+		// Comprueba si estamos sobre intenta de nuevo
+		if(touchX > intentaX && touchX < intentaX + capaIntentaDenuevo.width &&
+				touchY > intentaY -capaIntentaDenuevo.height && touchY < intentaY) {
+			capaIntentaDenuevo.setText(fuentePuntuacion, "Try Again", Color.YELLOW, 0, Align.left, false);
+		}
+		
+		// Comprueba si estamos sobre intenta de nuevo
+		if(touchX > menuX && touchX < menuX + capaMenuPrincipal.width &&
+				touchY > menuY - capaMenuPrincipal.height && touchY < menuY) {
+			capaMenuPrincipal.setText(fuentePuntuacion, "Main Menu", Color.YELLOW, 0, Align.left, false);
+		}
+		
+		
 		
 		// Se ha pulsado intentar de nuevo o menu principal
 		if(Gdx.input.isTouched()) {
