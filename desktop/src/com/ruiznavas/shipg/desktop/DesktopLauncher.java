@@ -10,7 +10,7 @@ public class DesktopLauncher {
 		config.foregroundFPS = 60;
 		config.width = ShipGame.ANCHO;
 		config.height = ShipGame.ALTO;
-		config.resizable = false;
+		config.resizable = true;
 		new LwjglApplication(new ShipGame(), config);
 	}
 }

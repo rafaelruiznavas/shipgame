@@ -1,8 +1,8 @@
 package com.ruiznavas.shipg.tools;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.ruiznavas.shipg.ShipGame;
 
 public class FondoScroll {
 	public static final int VELOCIDAD_DEFECTO = 80;
@@ -21,7 +21,7 @@ public class FondoScroll {
 		
 		velocidad = 0;
 		velocidadObjetivo = VELOCIDAD_DEFECTO;
-		escalaImagen = 1;
+		escalaImagen = (float)ShipGame.ANCHO / (float)ShipGame.ALTO;
 		velocidadFijada = true;
 		y1 = 0;
 		y2 = image.getHeight() * escalaImagen;
@@ -57,8 +57,8 @@ public class FondoScroll {
 		}
 		
 		// Renderizamos
-		batch.draw(image, 0, y1, Gdx.graphics.getWidth(), image.getHeight() * escalaImagen); 
-		batch.draw(image, 0, y2, Gdx.graphics.getWidth(), image.getHeight() * escalaImagen);
+		batch.draw(image, 0, y1, ShipGame.ANCHO, ShipGame.ALTO * escalaImagen); 
+		batch.draw(image, 0, y2, ShipGame.ANCHO, ShipGame.ALTO * escalaImagen);
 	}
 	
 	public void redimensionar(int ancho, int alto) {

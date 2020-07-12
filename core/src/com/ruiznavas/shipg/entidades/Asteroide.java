@@ -1,8 +1,8 @@
 package com.ruiznavas.shipg.entidades;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.ruiznavas.shipg.ShipGame;
 import com.ruiznavas.shipg.tools.RectColision;
 
 public class Asteroide {
@@ -17,7 +17,7 @@ public class Asteroide {
 	
 	public Asteroide(float x) {
 		this.x = x;
-		this.y = Gdx.graphics.getHeight();
+		this.y = ShipGame.ALTO;
 		
 		this.rect = new RectColision(x, x, ANCHO, ALTO);
 		

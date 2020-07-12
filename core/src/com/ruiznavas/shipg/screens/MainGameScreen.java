@@ -50,6 +50,7 @@ public class MainGameScreen implements Screen{
 	ArrayList<Explosion> explosiones;
 	
 	Texture vacia;
+	Texture controles;
 	
 	BitmapFont fuentePuntuacion;
 	RectColision rectJugador;
@@ -67,6 +68,9 @@ public class MainGameScreen implements Screen{
 		puntuacion = 0;
 		vacia = new Texture("blank.png");
 		rectJugador = new RectColision(0,0,ANCHO_SHIP,ALTO_SHIP);
+		
+		if(ShipGame.ES_MOVIL)
+			controles = new Texture("controls.png");
 		
 		random = new Random();
 		timerSpawnAsteroide = random.nextFloat() * (TIEMPO_MAXIMO_SPAWN_ASTEROIDE - TIEMPO_MINIMO_SPAWN_ASTEROIDE) + TIEMPO_MINIMO_SPAWN_ASTEROIDE;
@@ -94,7 +98,7 @@ public class MainGameScreen implements Screen{
 	public void render(float delta) {
 		shootTimer += delta;
 		// Disparo nave
-		if(Gdx.input.isKeyPressed(Keys.SPACE) && shootTimer >= TIEMPO_ESPERA_DISPARO ) {
+		if((esDerecha() || esIzquierda()) && shootTimer >= TIEMPO_ESPERA_DISPARO ) {
 			shootTimer = 0;
 			int offset = 4;
 			if(roll == 1 || roll == 3)
@@ -110,7 +114,7 @@ public class MainGameScreen implements Screen{
 		timerSpawnAsteroide -= delta;
 		if(timerSpawnAsteroide <= 0) {
 			timerSpawnAsteroide = random.nextFloat() * (TIEMPO_MAXIMO_SPAWN_ASTEROIDE - TIEMPO_MINIMO_SPAWN_ASTEROIDE) + TIEMPO_MINIMO_SPAWN_ASTEROIDE;
-			asteroides.add(new Asteroide(random.nextInt(Gdx.graphics.getWidth() - Asteroide.ANCHO)));
+			asteroides.add(new Asteroide(random.nextInt(ShipGame.ANCHO - Asteroide.ANCHO)));
 		}
 		
 		// Actualizamos los asteroides
@@ -145,12 +149,12 @@ public class MainGameScreen implements Screen{
 		if(Gdx.input.isKeyPressed(Keys.DOWN)) {
 			y-= SPEED * delta;
 		}
-		if(Gdx.input.isKeyPressed(Keys.LEFT)) {
+		if(esIzquierda()) {
 			x-= SPEED * delta;
 			if(x < 0) x = 0;
 			
 			// Actualiza roll si se pulso el boton
-			if(Gdx.input.isKeyJustPressed(Keys.LEFT) && !Gdx.input.isKeyPressed(Keys.RIGHT) && roll > 0) {
+			if(esSoloIzquierda() && !esDerecha() && roll > 0) {
 				rollTimer = 0;
 				roll--;
 			}
@@ -169,13 +173,13 @@ public class MainGameScreen implements Screen{
 			}
 		}
 		
-		if(Gdx.input.isKeyPressed(Keys.RIGHT)) {
+		if(esDerecha()) {
 			x+= SPEED * delta;
-			if(x + ANCHO_SHIP > Gdx.graphics.getWidth())
-				x = Gdx.graphics.getWidth() - ANCHO_SHIP;
+			if(x + ANCHO_SHIP > ShipGame.ANCHO)
+				x = ShipGame.ANCHO - ANCHO_SHIP;
 			
 			// Actualiza roll si se pulso el boton
-			if(Gdx.input.isKeyJustPressed(Keys.RIGHT) && !Gdx.input.isKeyPressed(Keys.RIGHT) && roll > 0) {
+			if(esSoloDerecha() && !esIzquierda() && roll > 0) {
 				rollTimer = 0;
 				roll--;
 			}
@@ -237,8 +241,8 @@ public class MainGameScreen implements Screen{
 		game.fondoScroll.actualizarYRender(delta, game.getBatch());
 		
 		GlyphLayout capaPuntuacion = new GlyphLayout(fuentePuntuacion, "SCORE: " + puntuacion);
-		fuentePuntuacion.draw(game.getBatch(), capaPuntuacion, Gdx.graphics.getWidth()/2 - capaPuntuacion.width/2, 
-				Gdx.graphics.getHeight() -capaPuntuacion.height - 10);
+		fuentePuntuacion.draw(game.getBatch(), capaPuntuacion, ShipGame.ANCHO/2 - capaPuntuacion.width/2, 
+				ShipGame.ALTO -capaPuntuacion.height - 10);
 		
 		for(Disparo disparo : disparos) {
 			disparo.render(game.getBatch());
@@ -257,11 +261,39 @@ public class MainGameScreen implements Screen{
 		else
 			game.getBatch().setColor(Color.RED);
 		
-		game.getBatch().draw(vacia, 0,0, Gdx.graphics.getWidth() * salud, 5);
+		game.getBatch().draw(vacia, 0,0, ShipGame.ANCHO * salud, 5);
 		game.getBatch().setColor(Color.WHITE);
 		
-		game.getBatch().draw((TextureRegion)rolls[roll].getKeyFrame(stateTime,true), x, y, ANCHO_SHIP, ALTO_SHIP); 
+		game.getBatch().draw((TextureRegion)rolls[roll].getKeyFrame(stateTime,true), x, y, ANCHO_SHIP, ALTO_SHIP);
+		
+		if(ShipGame.ES_MOVIL) {
+			// Dibujamos el control izquierda
+			game.getBatch().setColor(Color.RED);
+			game.getBatch().draw(controles, 0, 0, ShipGame.ANCHO/2, ShipGame.ALTO,0,0,ShipGame.ANCHO/2,ShipGame.ALTO, false, false);
+			
+			game.getBatch().setColor(Color.BLUE);
+			game.getBatch().draw(controles, ShipGame.ANCHO/2, 0, ShipGame.ANCHO/2, ShipGame.ALTO,0,0,ShipGame.ANCHO/2,ShipGame.ALTO, false, false);
+			
+			game.getBatch().setColor(Color.WHITE);
+		}
+		
 		game.getBatch().end();
+	}
+	
+	private boolean esDerecha() {
+		return Gdx.input.isKeyPressed(Keys.RIGHT) || (Gdx.input.isTouched() && game.camaraJuego.getInputEnMundoJuego().x >= ShipGame.ANCHO/2);
+	}
+	
+	private boolean esIzquierda() {
+		return Gdx.input.isKeyPressed(Keys.LEFT) || (Gdx.input.isTouched() && game.camaraJuego.getInputEnMundoJuego().x < ShipGame.ANCHO/2);
+	}
+	
+	private boolean esSoloDerecha() {
+		return Gdx.input.isKeyJustPressed(Keys.RIGHT) || (Gdx.input.justTouched() && game.camaraJuego.getInputEnMundoJuego().x >= ShipGame.ANCHO/2);
+	}
+	
+	private boolean esSoloIzquierda() {
+		return Gdx.input.isKeyJustPressed(Keys.LEFT) || (Gdx.input.justTouched() && game.camaraJuego.getInputEnMundoJuego().x < ShipGame.ANCHO/2);
 	}
 
 	@Override

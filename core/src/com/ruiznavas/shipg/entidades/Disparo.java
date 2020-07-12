@@ -1,8 +1,8 @@
 package com.ruiznavas.shipg.entidades;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.ruiznavas.shipg.ShipGame;
 import com.ruiznavas.shipg.tools.RectColision;
 
 public class Disparo {
@@ -30,7 +30,7 @@ public class Disparo {
 	public void update(float deltaTime) {
 		y += VELOCIDAD * deltaTime;
 		
-		if(y > Gdx.graphics.getHeight())
+		if(y > ShipGame.ALTO)
 			eliminar= true;
 		
 		rect.mover(x, y);

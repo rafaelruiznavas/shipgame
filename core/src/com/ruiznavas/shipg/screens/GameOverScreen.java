@@ -59,26 +59,26 @@ public class GameOverScreen implements Screen{
 		
 		game.fondoScroll.actualizarYRender(delta, game.getBatch());
 		
-		game.getBatch().draw(bannerGameOver, Gdx.graphics.getWidth()/2 - ANCHO_BANNER / 2, 
-				Gdx.graphics.getHeight() - ALTO_BANNER - 15, ANCHO_BANNER, ALTO_BANNER);
+		game.getBatch().draw(bannerGameOver, ShipGame.ANCHO/2 - ANCHO_BANNER / 2, 
+				ShipGame.ALTO - ALTO_BANNER - 15, ANCHO_BANNER, ALTO_BANNER);
 		GlyphLayout capaPuntuacion = new GlyphLayout(fuentePuntuacion, "Score: \n" + puntuacion, Color.WHITE, 0, Align.left, false);
 		GlyphLayout capaPuntuacionAlta = new GlyphLayout(fuentePuntuacion, "High Score: \n" + mayorPuntuacion, Color.WHITE, 0, Align.left, false);
 		fuentePuntuacion.draw(game.getBatch(), capaPuntuacion, 
-				Gdx.graphics.getWidth()/2 - capaPuntuacion.width/2,
-				Gdx.graphics.getHeight() - ALTO_BANNER - 15 * 2);
+				ShipGame.ANCHO/2 - capaPuntuacion.width/2,
+				ShipGame.ALTO - ALTO_BANNER - 15 * 2);
 		fuentePuntuacion.draw(game.getBatch(), capaPuntuacionAlta, 
-				Gdx.graphics.getWidth()/2 - capaPuntuacionAlta.width/2,
-				Gdx.graphics.getHeight() - ALTO_BANNER - 15 * 6);
+				ShipGame.ANCHO/2 - capaPuntuacionAlta.width/2,
+				ShipGame.ALTO - ALTO_BANNER - 15 * 6);
 		GlyphLayout capaIntentaDenuevo = new GlyphLayout(fuentePuntuacion, "Try Again");
 		GlyphLayout capaMenuPrincipal = new GlyphLayout(fuentePuntuacion, "Main Menu");
 
-		float intentaX = Gdx.graphics.getWidth() / 2 - capaIntentaDenuevo.width / 2;
-		float intentaY = Gdx.graphics.getHeight() / 2 - capaIntentaDenuevo.height / 2;
+		float intentaX = ShipGame.ANCHO / 2 - capaIntentaDenuevo.width / 2;
+		float intentaY = ShipGame.ALTO / 2 - capaIntentaDenuevo.height / 2;
 		
-		float menuX = Gdx.graphics.getWidth() / 2 - capaMenuPrincipal.width / 2;
-		float menuY = Gdx.graphics.getHeight() / 2 - capaMenuPrincipal.height / 2 - capaIntentaDenuevo.height - 15;
+		float menuX = ShipGame.ANCHO / 2 - capaMenuPrincipal.width / 2;
+		float menuY = ShipGame.ALTO / 2 - capaMenuPrincipal.height / 2 - capaIntentaDenuevo.height - 15;
 		
-		float touchX = Gdx.input.getX(), touchY = Gdx.graphics.getHeight() - Gdx.input.getY();
+		float touchX = game.camaraJuego.getInputEnMundoJuego().x, touchY = ShipGame.ALTO - game.camaraJuego.getInputEnMundoJuego().y;
 		
 		// Se ha pulsado intentar de nuevo o menu principal
 		if(Gdx.input.isTouched()) {

@@ -40,15 +40,19 @@ public class MainMenuScreen implements Screen{
 			public boolean touchUp(int screenX, int screenY, int pointer, int button) {
 				// Boton salir
 				int x = ShipGame.ANCHO/2 - BOTON_SALIR_ANCHO/2;
-				if(Gdx.input.getX() < x + BOTON_SALIR_ANCHO && Gdx.input.getX() > x &&
-						ShipGame.ALTO - Gdx.input.getY() < BOTON_SALIR_Y + BOTON_SALIR_ALTO && ShipGame.ALTO - Gdx.input.getY() > BOTON_SALIR_Y ) {
+				if(game.camaraJuego.getInputEnMundoJuego().x < x + BOTON_SALIR_ANCHO &&
+					game.camaraJuego.getInputEnMundoJuego().x > x &&
+					ShipGame.ALTO - game.camaraJuego.getInputEnMundoJuego().y < BOTON_SALIR_Y + BOTON_SALIR_ALTO &&
+					ShipGame.ALTO - game.camaraJuego.getInputEnMundoJuego().y > BOTON_SALIR_Y ) {
 					mainMenuScreen.dispose();
 					Gdx.app.exit();					
 				}
 				
 				// Boton jugar
-				if(Gdx.input.getX() < x + BOTON_PLAY_ANCHO && Gdx.input.getX() > x &&
-						ShipGame.ALTO - Gdx.input.getY() < BOTON_PLAY_Y + BOTON_PLAY_ALTO && ShipGame.ALTO - Gdx.input.getY() > BOTON_PLAY_Y ) {
+				if(game.camaraJuego.getInputEnMundoJuego().x < x + BOTON_PLAY_ANCHO &&
+						game.camaraJuego.getInputEnMundoJuego().x > x &&
+						ShipGame.ALTO - game.camaraJuego.getInputEnMundoJuego().y < BOTON_PLAY_Y + BOTON_PLAY_ALTO &&
+						ShipGame.ALTO - game.camaraJuego.getInputEnMundoJuego().y > BOTON_PLAY_Y ) {
 					mainMenuScreen.dispose();
 					game.setScreen(new MainGameScreen(game));
 				}
@@ -71,10 +75,11 @@ public class MainMenuScreen implements Screen{
 		game.fondoScroll.actualizarYRender(delta, game.getBatch());
 		
 		int x = ShipGame.ANCHO/2 - BOTON_SALIR_ANCHO/2;
-		if(Gdx.input.getX() < x + BOTON_SALIR_ANCHO && Gdx.input.getX() > x &&
-			ShipGame.ALTO - Gdx.input.getY() < BOTON_SALIR_Y + BOTON_SALIR_ALTO && ShipGame.ALTO - Gdx.input.getY() > BOTON_SALIR_Y ) {
-			game.getBatch().draw(btnSalirActivo, x, BOTON_SALIR_Y, BOTON_SALIR_ANCHO,BOTON_SALIR_ALTO);
-			
+		if(game.camaraJuego.getInputEnMundoJuego().x < x + BOTON_SALIR_ANCHO &&
+			game.camaraJuego.getInputEnMundoJuego().x > x &&
+			ShipGame.ALTO - game.camaraJuego.getInputEnMundoJuego().y < BOTON_SALIR_Y + BOTON_SALIR_ALTO &&
+			ShipGame.ALTO - game.camaraJuego.getInputEnMundoJuego().y > BOTON_SALIR_Y ) {
+				game.getBatch().draw(btnSalirActivo, x, BOTON_SALIR_Y, BOTON_SALIR_ANCHO,BOTON_SALIR_ALTO);			
 		} else {
 			game.getBatch().draw(btnSalirInactivo, ShipGame.ANCHO/2 - BOTON_SALIR_ANCHO/2, BOTON_SALIR_Y, BOTON_SALIR_ANCHO,BOTON_SALIR_ALTO);
 		}
@@ -83,10 +88,6 @@ public class MainMenuScreen implements Screen{
 		if(Gdx.input.getX() < x + BOTON_PLAY_ANCHO && Gdx.input.getX() > x &&
 			ShipGame.ALTO - Gdx.input.getY() < BOTON_PLAY_Y + BOTON_PLAY_ALTO && ShipGame.ALTO - Gdx.input.getY() > BOTON_PLAY_Y ) {
 			game.getBatch().draw(btnPlayActivo, x, BOTON_PLAY_Y, BOTON_PLAY_ANCHO,BOTON_PLAY_ALTO);
-			if(Gdx.input.isTouched()) {
-				this.dispose();
-				game.setScreen(new MainGameScreen(game));
-			}
 		} else {
 			game.getBatch().draw(btnPlayInactivo, ShipGame.ANCHO/2 - BOTON_PLAY_ANCHO/2, BOTON_PLAY_Y, BOTON_PLAY_ANCHO,BOTON_PLAY_ALTO);
 		}
